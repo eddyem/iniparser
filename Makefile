@@ -6,7 +6,7 @@
 # Compiler settings
 CC      ?= gcc
 
-CFLAGS  += -fPIC -Wall -Wextra -ansi -pedantic
+CFLAGS  += -fPIC -Wall -Wextra -ansi -pedantic -std=gnu99
 ifndef DEBUG
 ADDITIONAL_CFLAGS  ?= -O2
 else
@@ -73,14 +73,10 @@ clean:
 veryclean:
 	$(RM) $(OBJS) libiniparser.a $(SO_TARGET)
 	rm -rf ./html ; mkdir html
-	cd example ; $(MAKE) veryclean
-	cd test ; $(MAKE) veryclean
+	cd example && $(MAKE) veryclean
 
 docs:
 	@(cd doc ; $(MAKE))
-	
-check: $(SO_TARGET)
-	@(cd test ; $(MAKE))
 
 example: libiniparser.a
-	@(cd example ; $(MAKE))	
+	@(cd example ; $(MAKE))

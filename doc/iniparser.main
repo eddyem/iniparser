@@ -169,12 +169,10 @@
     present in the ini file, you can use iniparser_set() to insert a
     string.
 
-    If you want to add a section to the structure, add a key
-    with a NULL value. Example:
+    If you want to delete section or key, set its value to NULL. Example:
     @verbatim
-    iniparser_set(ini, "section", NULL);
-    iniparser_set(ini, "section:key1", NULL);
-    iniparser_set(ini, "section:key2", NULL);
+    iniparser_set(ini, "section0, NULL); // remove section0
+    iniparser_set(ini, "section1:key1", NULL); // remove key1 from section1
     @endverbatim
 
 
@@ -198,10 +196,22 @@
     similar. There are otherwise many other dictionary implementations
     available on the net to replace this one.
 
+    @section new   New in ver.5.0.
+
+    These things are added by E.Emelianov forming ver.5.
+
+  - Keys are stored now in different data structures, according to their sections' names.
+  - Memory for sections and keys now not redoubles but increased by constant size.
+  - To remove records and sections use same function `iniparser_set()` with NULL in `val`.
+  - For working with large ini files I add binary search in sorted (by hash) lists. To sort dictionary use function `iniparser_sort_hash()`.
+  - Sort by keyword & section names for pretty output by `iniparser_sort()`.
+  - Very often user works with same section many times (read/add/modify keys inside single section), so I add global variable storing last accessed section.
 
     @section authors    Authors
 
     Nicolas Devillard (ndevilla AT free DOT fr).
+
+    Edward Emelianof (edward.emelianoff AT gmail DOT com).
 
 
 */

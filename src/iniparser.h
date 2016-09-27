@@ -33,18 +33,6 @@ extern "C" {
 
 /*-------------------------------------------------------------------------*/
 /**
-  @brief    Configure a function to receive the error messages.
-  @param    errback  Function to call.
-
-  By default, the error will be printed on stderr. If a null pointer is passed
-  as errback the error callback will be switched back to default.
- */
-/*--------------------------------------------------------------------------*/
-
-void iniparser_set_error_callback(int (*errback)(const char *, ...));
-
-/*-------------------------------------------------------------------------*/
-/**
   @brief    Get number of sections in a dictionary
   @param    d   Dictionary to examine
   @return   int Number of sections found in dictionary
@@ -82,36 +70,6 @@ int iniparser_getnsec(const dictionary * d);
 
 const char * iniparser_getsecname(const dictionary * d, int n);
 
-
-/*-------------------------------------------------------------------------*/
-/**
-  @brief    Save a dictionary to a loadable ini file
-  @param    d   Dictionary to dump
-  @param    f   Opened file pointer to dump to
-  @return   void
-
-  This function dumps a given dictionary into a loadable ini file.
-  It is Ok to specify @c stderr or @c stdout as output files.
- */
-/*--------------------------------------------------------------------------*/
-
-void iniparser_dump_ini(const dictionary * d, FILE * f);
-
-/*-------------------------------------------------------------------------*/
-/**
-  @brief    Save a dictionary section to a loadable ini file
-  @param    d   Dictionary to dump
-  @param    s   Section name of dictionary to dump
-  @param    f   Opened file pointer to dump to
-  @return   void
-
-  This function dumps a given section of a given dictionary into a loadable ini
-  file.  It is Ok to specify @c stderr or @c stdout as output files.
- */
-/*--------------------------------------------------------------------------*/
-
-void iniparser_dumpsection_ini(const dictionary * d, const char * s, FILE * f);
-
 /*-------------------------------------------------------------------------*/
 /**
   @brief    Dump a dictionary to an opened file pointer.
@@ -136,25 +94,6 @@ void iniparser_dump(const dictionary * d, FILE * f);
  */
 /*--------------------------------------------------------------------------*/
 int iniparser_getsecnkeys(const dictionary * d, const char * s);
-
-/*-------------------------------------------------------------------------*/
-/**
-  @brief    Get the number of keys in a section of a dictionary.
-  @param    d    Dictionary to examine
-  @param    s    Section name of dictionary to examine
-  @param    keys Already allocated array to store the keys in
-  @return   The pointer passed as `keys` argument or NULL in case of error
-
-  This function queries a dictionary and finds all keys in a given section.
-  The keys argument should be an array of pointers which size has been
-  determined by calling `iniparser_getsecnkeys` function prior to this one.
-
-  Each pointer in the returned char pointer-to-pointer is pointing to
-  a string allocated in the dictionary; do not free or modify them.
- */
-/*--------------------------------------------------------------------------*/
-const char ** iniparser_getseckeys(const dictionary * d, const char * s, const char ** keys);
-
 
 /*-------------------------------------------------------------------------*/
 /**
@@ -298,18 +237,6 @@ int iniparser_set(dictionary * ini, const char * entry, const char * val);
 
 /*-------------------------------------------------------------------------*/
 /**
-  @brief    Delete an entry in a dictionary
-  @param    ini     Dictionary to modify
-  @param    entry   Entry to delete (entry name)
-  @return   void
-
-  If the given entry can be found, it is deleted from the dictionary.
- */
-/*--------------------------------------------------------------------------*/
-void iniparser_unset(dictionary * ini, const char * entry);
-
-/*-------------------------------------------------------------------------*/
-/**
   @brief    Finds out if a given entry exists in a dictionary
   @param    ini     Dictionary to search
   @param    entry   Name of the entry to look for
@@ -350,6 +277,27 @@ dictionary * iniparser_load(const char * ininame);
  */
 /*--------------------------------------------------------------------------*/
 void iniparser_freedict(dictionary * d);
+
+/** Sort objects by their hash in large dictionary for quick access */
+void iniparser_sort_hash(dictionary *d);
+
+/** Sort objects by their names */
+void iniparser_sort(dictionary *d);
+
+typedef enum{
+    INIPARSER_NO_ERROR    = 0  // all OK
+    ,INIPARSER_NO_OBJECT       // NULL instead of object
+    ,INIPARSER_BAD_IDX         // bad index (outside of bounds)
+    ,INIPARSER_NOT_FOUND       // section or key not found
+    ,INIPARSER_BAD_NUMBER      // wrong number (not a number or have extra symbols)
+    ,INIPARSER_CANT_OPEN       // cannot open file
+    ,INIPARSER_NO_MEM          // can't allocate memory
+    ,INIPARSER_TOO_LONG        // line too long
+    ,INIPARSER_SYNTAX_ERR      // syntax error
+} iniparser_err_t;
+
+iniparser_err_t get_error();
+char *get_errmsg();
 
 #ifdef __cplusplus
 }

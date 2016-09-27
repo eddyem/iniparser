@@ -17,8 +17,12 @@ int main(int argc, char * argv[])
     }
 
     ini = iniparser_load(ini_name);
+    if(!ini){
+        fprintf(stderr, "Error: %s\n", get_errmsg());
+        return 1;
+    }
+    iniparser_sort(ini);
     iniparser_dump(ini, stdout);
     iniparser_freedict(ini);
-
     return 0 ;
 }
